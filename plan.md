@@ -10,6 +10,17 @@ A pragmatic, iterative plan to build a web app for managing X (formerly Twitter)
 
 ---
 
+## Project Kickoff To-Do
+
+- [ ] Finalize environment choices (Cloudflare Pages/Workers, Postgres provider, Sentry project) and capture credentials
+- [ ] Create GitHub repository with pnpm workspaces and push the initial plan files
+- [ ] Open GitHub Issues for Milestone M0 tasks and assign owners/due dates
+- [ ] Prepare shared secrets management strategy (development vs production) and document in `README.md`
+- [ ] Schedule daily X data sync cron window and confirm rate-limit guardrails with API keys
+- [ ] Align on analytics scope and backfill window to unblock Drizzle schema definitions
+
+---
+
 ## Architecture (High-level)
 
 - Frontend: Next.js (App Router) + React, Tailwind CSS v4, shadcn/ui.
