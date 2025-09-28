@@ -7,11 +7,13 @@ This document provides specific GitHub Issues to create for Milestone M0 tasks w
 ## Issues to Create
 
 ### 1. Initialize pnpm workspaces
+
 **Title**: `[M0] Initialize repo with pnpm and workspaces`
 **Labels**: `milestone-m0`, `setup`, `high-priority`
 **Assignee**: [Your GitHub username]
 **Due Date**: Day 1
 **Description**:
+
 ```
 Set up the basic monorepo structure with pnpm workspaces.
 
@@ -27,11 +29,13 @@ Set up the basic monorepo structure with pnpm workspaces.
 ```
 
 ### 2. Scaffold Next.js Web App
+
 **Title**: `[M0] Scaffold apps/web (Next.js, TypeScript, App Router)`
 **Labels**: `milestone-m0`, `frontend`, `high-priority`
 **Assignee**: [Your GitHub username]
 **Due Date**: Day 1
 **Description**:
+
 ```
 Create the Next.js frontend application with TypeScript and App Router.
 
@@ -47,11 +51,13 @@ Create the Next.js frontend application with TypeScript and App Router.
 ```
 
 ### 3. Configure Tailwind v4 and shadcn/ui
+
 **Title**: `[M0] Configure Tailwind v4 and shadcn/ui base components`
 **Labels**: `milestone-m0`, `frontend`, `styling`
 **Assignee**: [Your GitHub username]
 **Due Date**: Day 1
 **Description**:
+
 ```
 Set up styling system with Tailwind v4 and shadcn/ui components.
 
@@ -68,11 +74,13 @@ Set up styling system with Tailwind v4 and shadcn/ui components.
 ```
 
 ### 4. Scaffold Hono API
+
 **Title**: `[M0] Scaffold apps/api (Hono on Cloudflare Workers)`
 **Labels**: `milestone-m0`, `backend`, `high-priority`
 **Assignee**: [Your GitHub username]
 **Due Date**: Day 1-2
 **Description**:
+
 ```
 Create the Hono-based API that will run on Cloudflare Workers.
 
@@ -89,11 +97,13 @@ Create the Hono-based API that will run on Cloudflare Workers.
 ```
 
 ### 5. Set up Drizzle ORM and Database
+
 **Title**: `[M0] Add Drizzle ORM and Turso/libSQL setup`
 **Labels**: `milestone-m0`, `backend`, `database`
 **Assignee**: [Your GitHub username]
 **Due Date**: Day 2
 **Description**:
+
 ```
 Configure Drizzle ORM with Turso for production and libSQL for development.
 

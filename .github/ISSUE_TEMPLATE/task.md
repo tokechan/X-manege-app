@@ -4,7 +4,6 @@ about: Individual task for project development
 title: '[TASK] '
 labels: task
 assignees: ''
-
 ---
 
 ## Task Description
@@ -15,9 +14,9 @@ assignees: ''
 
 <!-- List specific criteria that must be met for this task to be considered complete -->
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
 
 ## Technical Notes
 
