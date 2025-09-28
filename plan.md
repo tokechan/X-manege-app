@@ -10,9 +10,24 @@ A pragmatic, iterative plan to build a web app for managing X (formerly Twitter)
 
 ---
 
+## Environment Decisions
+
+- Hosting
+  - Frontend: Cloudflare Pages (production), local dev via `pnpm dev`
+  - API: Cloudflare Workers (production), local dev via `wrangler dev`
+- Database: Turso (libSQL/SQLite) for production and dev; local dev also supported via `turso dev` or Docker libSQL
+- ORM: Drizzle with `drizzle-kit` migrations tracked in Git
+- Observability: Sentry (Projects: `x-manage-web`, `x-manage-api`)
+- Secrets Management
+  - Development: `.env.local` files managed via 1Password vault
+  - Production: Cloudflare Secrets (Pages/Workers), GitHub Actions encrypted secrets for CI
+- Daily Sync Window: 02:30 UTC Cloudflare Cron Trigger (aligned with X API rate limits and low-traffic window)
+
+---
+
 ## Project Kickoff To-Do
 
-- [ ] Finalize environment choices (Cloudflare Pages/Workers, Postgres provider, Sentry project) and capture credentials
+- [x] Finalize environment choices (Cloudflare Pages/Workers, Turso, Sentry project) and capture credentials — see Env Decisions
 - [ ] Create GitHub repository with pnpm workspaces and push the initial plan files
 - [ ] Open GitHub Issues for Milestone M0 tasks and assign owners/due dates
 - [ ] Prepare shared secrets management strategy (development vs production) and document in `README.md`
@@ -26,10 +41,10 @@ A pragmatic, iterative plan to build a web app for managing X (formerly Twitter)
 - Frontend: Next.js (App Router) + React, Tailwind CSS v4, shadcn/ui.
 - Backend API: Hono (edge), deployed to Cloudflare Workers.
 - Authentication: Better Auth (formerly Auth.js/NextAuth) for Google OAuth and email links.
-- Database: Postgres (managed: e.g., Neon/Supabase). ORM: Drizzle.
+- Database: Turso (libSQL/SQLite) managed instances; ORM: Drizzle.
 - Job/Scheduling: Cloudflare Cron Triggers → Hono job route.
 - Observability: Sentry for frontend and backend.
-- Hosting: Cloudflare Pages for Next.js; Cloudflare Workers for API.
+- Hosting: Cloudflare Pages for Next.js; Cloudflare Workers for API; Turso libSQL for persistent storage.
 - CI/CD: GitHub Actions + pnpm.
 
 Suggested repository layout (monorepo with pnpm workspaces):
@@ -71,7 +86,7 @@ Tasks
 - [ ] Scaffold `apps/web` (Next.js, TypeScript, App Router)
 - [ ] Configure Tailwind v4 and shadcn/ui (install base components)
 - [ ] Scaffold `apps/api` (Hono on Cloudflare Workers)
-- [ ] Add Drizzle ORM, set up Postgres connection (Neon/Supabase)
+- [ ] Add Drizzle ORM, set up Turso connection (prod) and libSQL dev instance
 - [ ] ESLint 9 configured; basic rules + TypeScript
 - [ ] Sentry SDK setup (DSNs via secrets)
 - [ ] GitHub Actions: lint, type-check, build
@@ -93,7 +108,7 @@ Iteration Success
 Approach
 
 - Use Better Auth (the successor to Auth.js/NextAuth) in `apps/web` for Google OAuth and/or email magic links.
-- Persist users/accounts/sessions in Postgres via Drizzle.
+- Persist users/accounts/sessions in Turso via Drizzle.
 
 Tasks
 
@@ -214,7 +229,7 @@ Iteration Success
 ## Testing Strategy
 
 - Unit: business logic (ingestion, mapping, reducers) with Vitest.
-- Integration: API handlers with in-memory/mocked Postgres and MSW for X API.
+- Integration: API handlers with Turso test databases or libSQL in-memory and MSW for X API.
 - E2E: Playwright covering auth, connect X, daily sync validation, browse posts.
 
 ---
@@ -224,7 +239,7 @@ Iteration Success
 - Environments: `preview` (per PR), `staging`, `production`.
 - Cloudflare Pages for `apps/web` (Next.js functions if needed).
 - Cloudflare Workers for `apps/api` with separate routes and cron triggers.
-- Postgres via managed provider (Neon/Supabase); migrations via Drizzle.
+- Turso libSQL managed instances; migrations via Drizzle.
 
 ---
 
