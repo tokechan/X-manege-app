@@ -17,6 +17,9 @@ build/
 .env.test.local
 .env.production.local
 
+# Keep .env.example for template
+!.env.example
+
 # Logs
 logs
 *.log
@@ -64,9 +67,8 @@ jspm_packages/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-.env.test
+# dotenv environment variables file (duplicates removed above)
+# .env files are already handled in the Environment files section
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
