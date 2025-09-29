@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 200 100% 50%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 200 100% 50%;
+    --chart-1: 200 100% 50%;
+    --chart-2: 180 100% 50%;
+    --chart-3: 30 100% 50%;
+    --chart-4: 280 100% 50%;
+    --chart-5: 340 100% 50%;
+    --radius: 0.5rem;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 200 100% 40%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 200 100% 40%;
+    --chart-1: 200 100% 40%;
+    --chart-2: 180 100% 40%;
+    --chart-3: 30 100% 40%;
+    --chart-4: 280 100% 40%;
+    --chart-5: 340 100% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* TRON-inspired styling */
+  .tron-grid {
+    background-image: 
+      linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .tron-glow {
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+  }
+
+  .tron-border {
+    border: 1px solid rgba(0, 212, 255, 0.5);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/70;
+  }
+}
+
+@layer components {
+  .btn-tron {
+    @apply bg-transparent border border-tron-blue text-tron-blue hover:bg-tron-blue hover:text-black transition-all duration-300 tron-glow;
+  }
+
+  .card-tron {
+    @apply bg-card/50 backdrop-blur-sm border border-tron-blue/30 tron-glow;
+  }
+
+  .input-tron {
+    @apply bg-transparent border border-tron-cyan/50 focus:border-tron-cyan focus:ring-1 focus:ring-tron-cyan text-foreground;
+  }
+}

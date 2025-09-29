@@ -1,7 +1,7 @@
 # Cloudflare Workers configuration for X-manage-app API
 
 name = "x-manage-api"
-main = "src/index.ts"
+main = "src/index-simple.ts"
 compatibility_date = "2024-09-01"
 compatibility_flags = ["nodejs_compat"]
 
@@ -65,7 +65,7 @@ binding = "BACKUP_BUCKET"
 bucket_name = "x-manage-backups"
 
 # Analytics Engine for custom metrics
-[analytics_engine_datasets]
+[[analytics_engine_datasets]]
 binding = "ANALYTICS"
 
 # Limits and performance settings
