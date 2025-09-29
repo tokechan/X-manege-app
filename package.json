@@ -23,7 +23,12 @@
     "deploy:dev": "./scripts/deploy-cron.sh full development",
     "deploy:staging": "./scripts/deploy-cron.sh full staging",
     "deploy:production": "./scripts/deploy-cron.sh full production",
-    "cron:test": "./scripts/deploy-cron.sh test"
+    "cron:test": "./scripts/deploy-cron.sh test",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx drizzle/seed.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",
