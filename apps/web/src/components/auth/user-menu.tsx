@@ -11,6 +11,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { signOut } from 'next-auth/react'
 import { useAuth } from '@/components/providers/auth-provider'
 import { User, LogOut, Settings, Loader2 } from 'lucide-react'
+import Link from 'next/link'
 
 export function UserMenu() {
   const { user, isAuthenticated } = useAuth()
@@ -79,14 +80,16 @@ export function UserMenu() {
 
           {/* Actions */}
           <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-tron-blue"
-              title="Settings"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
+            <Link href="/settings">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-tron-blue"
+                title="Settings"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </Link>
             
             <Button
               variant="ghost"

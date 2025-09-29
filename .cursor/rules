@@ -1,0 +1,48 @@
+# X-manage-app Cursor Rules - Main Configuration
+
+You are working on the X-manage-app project, a modern full-stack application for managing X (Twitter) posts with analytics.
+
+## Project Overview
+
+- **Frontend**: Next.js 15, React, TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: Cloudflare Workers, Hono, Drizzle ORM
+- **Database**: Turso (SQLite)
+- **Auth**: NextAuth.js
+- **Testing**: Jest + React Testing Library (web), Vitest (api)
+- **Monorepo**: pnpm workspace
+
+## Key Principles
+
+1. **Test-Driven Development**: Always write tests for new features
+2. **Type Safety**: Use TypeScript strict mode everywhere
+3. **Code Quality**: Maintain high standards with automated checks
+4. **Git Workflow**: Follow conventional commits and automated testing
+5. **Performance**: Optimize for both development and production
+
+## File Structure
+
+```
+X-manage-app/
+├── apps/
+│   ├── web/          # Next.js frontend
+│   └── api/          # Cloudflare Workers API
+├── drizzle/          # Database schema and migrations
+├── scripts/          # Automation scripts
+└── docs/            # Documentation
+```
+
+## Development Workflow
+
+1. Create feature branch: `./scripts/test-workflow.sh git new feature/name`
+2. Write tests first, then implement features
+3. Run tests frequently: `pnpm test:watch`
+4. Commit with conventional format: `./scripts/test-workflow.sh git commit "feat: message"`
+5. Pre-commit hooks automatically run quality checks
+
+## Code Standards
+
+- Use functional components with hooks
+- Implement proper error handling
+- Add accessibility attributes
+- Follow existing patterns and conventions
+- Write self-documenting code with clear names
