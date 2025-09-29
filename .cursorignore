@@ -1,0 +1,84 @@
+# Build outputs and generated files
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
+**/out/
+**/.turbo/
+**/coverage/
+**/test-results/
+**/playwright-report/
+
+# Database files
+**/*.db
+**/*.sqlite
+**/local.db
+
+# Environment and config files
+**/.env
+**/.env.local
+**/.env.production
+**/.env.staging
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+**/.wrangler/
+**/.turso/
+
+# Logs and cache
+**/logs/
+**/*.log
+**/.cache/
+**/.parcel-cache/
+**/.rpt2_cache/
+**/.rts2_cache_cjs/
+**/.rts2_cache_es/
+**/.rts2_cache_umd/
+**/.nyc_output/
+**/.eslintcache
+
+# OS and editor files
+**/.DS_Store
+**/.DS_Store?
+**/._*
+**/.Spotlight-V100
+**/.Trashes
+**/ehthumbs.db
+**/Thumbs.db
+**/*.swp
+**/*.swo
+**/*~
+
+# Package manager files
+**/pnpm-lock.yaml
+**/package-lock.json
+**/yarn.lock
+**/.pnpm-store/
+
+# Temporary files
+**/tmp/
+**/temp/
+
+# Generated static files
+**/public/
+apps/web/out/**
+apps/web/public/
+
+# Migration files (generated)
+**/migrations/*.sql
+
+# Test artifacts
+**/__snapshots__/
+**/jest-results.json
+
+# IDE specific
+**/.vscode/
+**/.idea/
+
+# Compiled JavaScript from TypeScript
+**/*.js.map
+**/*.d.ts.map
+
+# Specific large generated files
+apps/web/out/_next/static/**
+apps/web/.next/**

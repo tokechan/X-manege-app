@@ -19,6 +19,78 @@ A modern web application for managing X (formerly Twitter) posts with analytics 
 - **Hosting**: Cloudflare Pages (frontend) + Cloudflare Workers (API)
 - **Observability**: Sentry for error tracking and performance monitoring
 
+## 🧪 Testing & Development Workflow
+
+This project uses automated testing and git workflows to maintain code quality.
+
+### Quick Commands
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Run pre-commit checks (lint + type-check + test)
+pnpm precommit
+
+# Use the workflow helper script
+./scripts/test-workflow.sh help
+```
+
+### Git Workflow
+
+We follow conventional commits and automated testing:
+
+```bash
+# Create a new feature branch
+./scripts/test-workflow.sh git new feature/my-feature
+
+# Make your changes, then commit (runs tests automatically)
+./scripts/test-workflow.sh git commit "feat(web): add new feature"
+
+# Push your branch
+./scripts/test-workflow.sh git push
+
+# Clean up merged branches
+./scripts/test-workflow.sh git cleanup
+```
+
+### Pre-commit Hooks
+
+The project automatically runs tests, linting, and type checking before each commit. If any check fails, the commit is blocked.
+
+To run checks manually:
+
+```bash
+./scripts/test-workflow.sh precommit
+```
+
+### Testing Guidelines
+
+- Write tests for all new features and bug fixes
+- Maintain test coverage above 80%
+- Use descriptive test names
+- Mock external dependencies
+- Run tests before committing
+
+### Cursor Rules
+
+This project uses modular Cursor rules for enhanced development experience:
+
+- **`.cursor/rules`** - Main project configuration and principles
+- **`.cursor/testing.md`** - Comprehensive testing guidelines
+- **`.cursor/git-workflow.md`** - Git workflow and commit standards
+- **`.cursor/code-style.md`** - Code quality and style guidelines
+- **`.cursor/architecture.md`** - System architecture patterns
+- **`.cursor/security.md`** - Security best practices
+
+See `.cursor/README.md` for detailed documentation on using these rules.
+
 ## 🔧 Development Setup
 
 ### Prerequisites

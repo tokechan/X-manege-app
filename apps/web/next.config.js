@@ -4,11 +4,11 @@ const nextConfig = {
     // Enable experimental features for better performance
     optimizePackageImports: ['lucide-react'],
   },
-  // Configure for Cloudflare Pages deployment
-  output: 'export',
-  trailingSlash: true,
+  // Disable static export for now due to NextAuth
+  // output: 'export',
+  // trailingSlash: true,
   images: {
-    unoptimized: true,
+    // unoptimized: true,
   },
   // Environment variables
   env: {
