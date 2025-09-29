@@ -52,6 +52,7 @@ This project uses a multi-layered approach to secrets management for security an
 ### Development Environment
 
 **Local Development** (`.env.local` files):
+
 ```bash
 # Database
 DATABASE_URL="libsql://local.db"
@@ -74,12 +75,14 @@ SENTRY_API_DSN="your-sentry-api-dsn"
 ```
 
 **Recommended: 1Password Integration**
+
 - Store all development secrets in a dedicated 1Password vault
 - Use 1Password CLI for secure secret injection:
+
   ```bash
   # Install 1Password CLI
   brew install 1password-cli
-  
+
   # Load secrets from 1Password
   eval $(op signin)
   export DATABASE_URL=$(op read "op://X-manage-dev/Database/url")
@@ -88,6 +91,7 @@ SENTRY_API_DSN="your-sentry-api-dsn"
 ### Production Environment
 
 **Cloudflare Secrets** (for Workers and Pages):
+
 ```bash
 # Set Cloudflare Workers secrets
 wrangler secret put DATABASE_URL
@@ -100,6 +104,7 @@ wrangler secret put BETTER_AUTH_SECRET
 ```
 
 **GitHub Actions Secrets** (for CI/CD):
+
 - `CLOUDFLARE_API_TOKEN`: For deployment automation
 - `TURSO_AUTH_TOKEN`: For database migrations
 - `SENTRY_AUTH_TOKEN`: For release tracking
@@ -116,15 +121,18 @@ wrangler secret put BETTER_AUTH_SECRET
 ### Security Best Practices
 
 1. **Never commit secrets to Git**
+
    - All `.env.*` files (except `.env.example`) are gitignored
    - Use placeholder values in `.env.example`
 
 2. **Rotate secrets regularly**
+
    - Database tokens: Every 90 days
    - API keys: Every 180 days
    - Auth secrets: Every 30 days
 
 3. **Use least-privilege access**
+
    - X API: Read-only permissions where possible
    - Database: Separate read/write credentials
    - Cloudflare: Scoped API tokens
@@ -172,18 +180,21 @@ pnpm test:coverage
 ## 🚀 Deployment
 
 ### Staging Deployment
+
 ```bash
 # Deploy to staging
 pnpm deploy:staging
 ```
 
 ### Production Deployment
+
 ```bash
 # Deploy to production (requires approval)
 pnpm deploy:production
 ```
 
 ### Automated Deployment
+
 - **Preview**: Automatic deployment on PR creation
 - **Staging**: Automatic deployment on merge to `develop`
 - **Production**: Manual deployment with approval on merge to `main`
@@ -196,17 +207,20 @@ pnpm deploy:production
 - **Logs**: Structured logging with Cloudflare Workers
 
 ### Sentry Projects
+
 - `x-manage-web`: Frontend error tracking and performance
 - `x-manage-api`: Backend API monitoring and alerts
 
 ## 🔄 Data Sync
 
 **Daily Sync Schedule**: 02:30 UTC
+
 - Optimized for X API rate limits
 - Low-traffic window for minimal user impact
 - Automatic retry with exponential backoff
 
 **Sync Process**:
+
 1. Fetch new posts from X API
 2. Update existing post metrics
 3. Store data in Turso database
@@ -238,6 +252,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for development workflow and guidelines
 ### Common Issues
 
 **Database Connection Errors**:
+
 ```bash
 # Check Turso connection
 turso db show [your-database]
@@ -247,12 +262,14 @@ sqlite3 local.db ".tables"
 ```
 
 **Authentication Issues**:
+
 ```bash
 # Verify Google OAuth setup
 curl -X GET "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=[token]"
 ```
 
 **X API Rate Limits**:
+
 - Check rate limit headers in API responses
 - Verify bearer token validity
 - Ensure sync window alignment (02:30 UTC)

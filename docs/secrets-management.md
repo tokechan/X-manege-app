@@ -13,16 +13,19 @@ This document provides detailed instructions for managing secrets across differe
 ## 📋 Required Secrets
 
 ### Database Secrets
+
 - `DATABASE_URL`: Local development database connection
 - `TURSO_DATABASE_URL`: Production Turso database URL
 - `TURSO_AUTH_TOKEN`: Authentication token for Turso
 
 ### Authentication Secrets
+
 - `BETTER_AUTH_SECRET`: Secret key for Better Auth (32+ random characters)
 - `GOOGLE_CLIENT_ID`: Google OAuth client ID
 - `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
 
 ### X API Secrets
+
 - `X_API_KEY`: X API consumer key
 - `X_API_SECRET`: X API consumer secret
 - `X_BEARER_TOKEN`: X API bearer token
@@ -30,6 +33,7 @@ This document provides detailed instructions for managing secrets across differe
 - `X_CLIENT_SECRET`: X OAuth 2.0 client secret
 
 ### Infrastructure Secrets
+
 - `CLOUDFLARE_API_TOKEN`: Cloudflare API token for deployments
 - `SENTRY_AUTH_TOKEN`: Sentry authentication token
 - `NEXT_PUBLIC_SENTRY_DSN`: Public Sentry DSN for frontend
@@ -40,6 +44,7 @@ This document provides detailed instructions for managing secrets across differe
 ### 1. Development Environment
 
 #### Option A: Manual Setup
+
 ```bash
 # Copy the template
 cp .env.example .env.local
@@ -49,6 +54,7 @@ nano .env.local
 ```
 
 #### Option B: 1Password Integration (Recommended)
+
 ```bash
 # Install 1Password CLI
 brew install 1password-cli
@@ -74,6 +80,7 @@ export TURSO_AUTH_TOKEN=$(op read "op://X-manage-dev/Database/password")
 ### 2. Production Environment
 
 #### Cloudflare Workers Secrets
+
 ```bash
 # Install Wrangler CLI
 npm install -g wrangler
@@ -92,6 +99,7 @@ wrangler secret put SENTRY_API_DSN --env production
 ```
 
 #### Cloudflare Pages Environment Variables
+
 Set these in the Cloudflare Dashboard under Pages > Settings > Environment Variables:
 
 - `NEXT_PUBLIC_SENTRY_DSN`
@@ -101,6 +109,7 @@ Set these in the Cloudflare Dashboard under Pages > Settings > Environment Varia
 - `BETTER_AUTH_SECRET`
 
 #### GitHub Actions Secrets
+
 Set these in GitHub repository settings under Secrets and Variables > Actions:
 
 - `CLOUDFLARE_API_TOKEN`: For deployment automation
@@ -114,6 +123,7 @@ Follow the same process as production but use staging-specific values and the `-
 ## 🔄 Secret Rotation Schedule
 
 ### Automated Rotation (Recommended)
+
 Set up automated rotation using GitHub Actions:
 
 ```yaml
@@ -121,7 +131,7 @@ Set up automated rotation using GitHub Actions:
 name: Rotate Secrets
 on:
   schedule:
-    - cron: '0 2 1 * *'  # Monthly on the 1st at 2 AM UTC
+    - cron: '0 2 1 * *' # Monthly on the 1st at 2 AM UTC
   workflow_dispatch:
 
 jobs:
@@ -136,14 +146,16 @@ jobs:
 ```
 
 ### Manual Rotation
+
 - **Database tokens**: Every 90 days
-- **API keys**: Every 180 days  
+- **API keys**: Every 180 days
 - **Auth secrets**: Every 30 days
 - **Infrastructure tokens**: Every 60 days
 
 ## 🚨 Emergency Procedures
 
 ### Compromised Secret Response
+
 1. **Immediately revoke** the compromised secret
 2. **Generate new secret** with the same permissions
 3. **Update all environments** (dev, staging, production)
@@ -151,6 +163,7 @@ jobs:
 5. **Document the incident** and review access logs
 
 ### Secret Recovery
+
 If you lose access to secrets:
 
 1. **Database**: Contact Turso support or regenerate tokens
@@ -161,13 +174,16 @@ If you lose access to secrets:
 ## 📊 Monitoring & Auditing
 
 ### Secret Usage Monitoring
+
 - Enable Cloudflare audit logs
 - Monitor Sentry for authentication errors
 - Set up alerts for failed API calls
 - Track secret access patterns
 
 ### Security Alerts
+
 Set up alerts for:
+
 - Failed authentication attempts
 - Unusual API usage patterns
 - Secret rotation failures
@@ -176,6 +192,7 @@ Set up alerts for:
 ## 🔧 Development Scripts
 
 ### Secret Validation Script
+
 ```bash
 #!/bin/bash
 # scripts/validate-secrets.sh
@@ -207,6 +224,7 @@ fi
 ```
 
 ### Secret Generation Script
+
 ```bash
 #!/bin/bash
 # scripts/generate-secrets.sh
