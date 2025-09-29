@@ -1,0 +1,11 @@
+# Simple Cloudflare Workers configuration for development
+
+name = "x-manage-api-dev"
+main = "src/index-simple.ts"
+compatibility_date = "2024-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment variables for development
+[vars]
+ENVIRONMENT = "development"
+API_VERSION = "v1"

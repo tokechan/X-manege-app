@@ -65,7 +65,7 @@ binding = "BACKUP_BUCKET"
 bucket_name = "x-manage-backups"
 
 # Analytics Engine for custom metrics
-[analytics_engine_datasets]
+[[analytics_engine_datasets]]
 binding = "ANALYTICS"
 
 # Limits and performance settings
