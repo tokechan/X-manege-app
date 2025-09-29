@@ -4,7 +4,6 @@ about: Track tasks for M0 milestone (1-2 days)
 title: '[M0] '
 labels: milestone-m0, enhancement
 assignees: ''
-
 ---
 
 ## Milestone M0 — Project Bootstrap (1–2 days)
@@ -38,7 +37,9 @@ assignees: ''
 - Documentation updated where necessary
 
 ### Estimated Time
+
 1-2 days
 
 ### Priority
+
 High - Blocking for all subsequent milestones
