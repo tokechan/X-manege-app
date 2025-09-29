@@ -17,7 +17,11 @@
     "tailwind-merge": "^2.0.0",
     "lucide-react": "^0.294.0",
     "@radix-ui/react-slot": "^1.0.2",
-    "class-variance-authority": "^0.7.0"
+    "class-variance-authority": "^0.7.0",
+    "next-auth": "^4.24.0",
+    "@auth/drizzle-adapter": "^0.7.0",
+    "@libsql/client": "^0.5.0",
+    "drizzle-orm": "^0.29.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

@@ -1,8 +1,14 @@
+"use client"
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { UserMenuCompact } from '@/components/auth/user-menu'
+import { useAuth } from '@/components/providers/auth-provider'
 import { formatNumber } from '@/lib/utils'
+import Link from 'next/link'
 
 export default function HomePage() {
+  const { isAuthenticated, isLoading } = useAuth()
   // Mock data for demonstration
   const stats = {
     totalPosts: 1234,
@@ -14,14 +20,31 @@ export default function HomePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <header className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-tron-blue mb-4 animate-fade-in">
-          X-manage-app
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-slide-in">
-          A modern web application for managing your X (formerly Twitter) posts with 
-          comprehensive analytics and insights.
-        </p>
+      <header className="flex justify-between items-start mb-12">
+        <div className="text-center flex-1">
+          <h1 className="text-4xl font-bold text-tron-blue mb-4 animate-fade-in">
+            X-manage-app
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-slide-in">
+            A modern web application for managing your X (formerly Twitter) posts with 
+            comprehensive analytics and insights.
+          </p>
+        </div>
+        
+        {/* User Menu */}
+        {!isLoading && (
+          <div className="ml-8">
+            {isAuthenticated ? (
+              <UserMenuCompact />
+            ) : (
+              <Link href="/auth/signin">
+                <Button variant="tron">
+                  Sign In
+                </Button>
+              </Link>
+            )}
+          </div>
+        )}
       </header>
 
       {/* Stats Grid */}
@@ -128,12 +151,29 @@ export default function HomePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="tron" className="w-full">
-              Connect X Account
-            </Button>
-            <Button variant="outline" className="w-full">
-              Learn More
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Link href="/dashboard">
+                  <Button variant="tron" className="w-full">
+                    Go to Dashboard
+                  </Button>
+                </Link>
+                <Button variant="outline" className="w-full">
+                  Connect X Account
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/signin">
+                  <Button variant="tron" className="w-full">
+                    Sign In to Get Started
+                  </Button>
+                </Link>
+                <Button variant="outline" className="w-full">
+                  Learn More
+                </Button>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
