@@ -1,0 +1,85 @@
+# Cloudflare Workers configuration for X-manage-app API
+
+name = "x-manage-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Worker configuration
+[env.production]
+name = "x-manage-api"
+route = { pattern = "api.x-manage.app/*", zone_name = "x-manage.app" }
+
+[env.staging]
+name = "x-manage-api-staging"
+route = { pattern = "api-staging.x-manage.app/*", zone_name = "x-manage.app" }
+
+[env.development]
+name = "x-manage-api-dev"
+
+# Cron Triggers for scheduled tasks
+[[triggers.crons]]
+cron = "30 2 * * *"  # Daily at 02:30 UTC
+name = "daily-x-sync"
+
+[[triggers.crons]]
+cron = "0 */6 * * *"  # Every 6 hours for health checks
+name = "health-check"
+
+[[triggers.crons]]
+cron = "0 0 1 * *"  # Monthly on 1st day for cleanup
+name = "monthly-cleanup"
+
+# Environment variables (non-sensitive)
+[vars]
+ENVIRONMENT = "production"
+API_VERSION = "v1"
+SYNC_WINDOW_UTC = "02:30"
+MAX_REQUESTS_PER_WINDOW = "200"
+REQUEST_DELAY_MS = "4500"
+SYNC_TIMEOUT_MINUTES = "30"
+
+# KV Namespaces for caching and state management
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-cache-namespace-id"
+preview_id = "your-cache-preview-id"
+
+[[kv_namespaces]]
+binding = "SYNC_STATE"
+id = "your-sync-state-namespace-id"
+preview_id = "your-sync-state-preview-id"
+
+# Durable Objects for rate limiting state
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["RateLimiter"]
+
+# R2 Bucket for data backups (optional)
+[[r2_buckets]]
+binding = "BACKUP_BUCKET"
+bucket_name = "x-manage-backups"
+
+# Analytics Engine for custom metrics
+[analytics_engine_datasets]
+binding = "ANALYTICS"
+
+# Limits and performance settings
+[limits]
+cpu_ms = 30000  # 30 seconds max execution time for cron jobs
+
+# Development environment overrides
+[env.development.vars]
+ENVIRONMENT = "development"
+MAX_REQUESTS_PER_WINDOW = "50"  # More conservative for dev
+REQUEST_DELAY_MS = "6000"  # Slower for dev testing
+
+# Staging environment overrides
+[env.staging.vars]
+ENVIRONMENT = "staging"
+MAX_REQUESTS_PER_WINDOW = "100"  # Conservative for staging
+REQUEST_DELAY_MS = "5000"

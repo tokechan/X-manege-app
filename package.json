@@ -19,7 +19,16 @@
     "secrets:validate": "./scripts/setup-secrets.sh validate",
     "secrets:cloudflare": "./scripts/setup-secrets.sh cloudflare",
     "secrets:1password": "./scripts/1password-integration.sh setup",
-    "secrets:generate": "./scripts/1password-integration.sh generate"
+    "secrets:generate": "./scripts/1password-integration.sh generate",
+    "deploy:dev": "./scripts/deploy-cron.sh full development",
+    "deploy:staging": "./scripts/deploy-cron.sh full staging",
+    "deploy:production": "./scripts/deploy-cron.sh full production",
+    "cron:test": "./scripts/deploy-cron.sh test",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx drizzle/seed.ts"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.0",
