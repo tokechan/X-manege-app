@@ -7,13 +7,20 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
-import { handleDailyXSync, handleHealthCheck, handleMonthlyCleanup, CronEnvironment } from './cron-handlers';
+import { timing } from 'hono/timing';
+import { handleDailyXSync, handleHealthCheck, handleMonthlyCleanup } from './cron-handlers';
+import { authRoutes } from './routes/auth';
+import { syncRoutes } from './routes/sync';
+import { postsRoutes } from './routes/posts';
+import { analyticsRoutes } from './routes/analytics';
+import type { WorkerEnv } from './types/env';
 
 // Initialize Hono app
-const app = new Hono<{ Bindings: CronEnvironment }>();
+const app = new Hono<{ Bindings: WorkerEnv }>();
 
 // Middleware
 app.use('*', logger());
+app.use('*', timing());
 app.use('*', prettyJSON());
 app.use('*', cors({
   origin: ['http://localhost:3000', 'https://x-manage.app', 'https://staging.x-manage.app'],
@@ -21,19 +28,42 @@ app.use('*', cors({
   allowHeaders: ['Content-Type', 'Authorization'],
 }));
 
+// API Routes
+app.route('/auth', authRoutes);
+app.route('/sync', syncRoutes);
+app.route('/posts', postsRoutes);
+app.route('/analytics', analyticsRoutes);
+
 // Health check endpoint
 app.get('/health', async (c) => {
   const env = c.env;
   
   // Get cached health check result
-  const cachedHealth = await env.CACHE.get('health-check');
-  const healthData = cachedHealth ? JSON.parse(cachedHealth) : null;
+  let healthData = null;
+  if (env.CACHE) {
+    const cachedHealth = await env.CACHE.get('health-check');
+    healthData = cachedHealth ? JSON.parse(cachedHealth) : null;
+  }
+  
+  // Test database connection
+  let dbHealth = false;
+  try {
+    const { createDatabaseClient, checkDatabaseHealth } = await import('./lib/database');
+    const db = createDatabaseClient(env as any);
+    dbHealth = await checkDatabaseHealth(db);
+  } catch (error) {
+    console.error('Database health check failed:', error);
+  }
   
   return c.json({
-    status: 'ok',
+    status: dbHealth ? 'ok' : 'degraded',
     timestamp: new Date().toISOString(),
-    environment: env.ENVIRONMENT,
+    environment: env.ENVIRONMENT || 'development',
     version: '1.0.0',
+    checks: {
+      database: dbHealth,
+      cache: !!env.CACHE,
+    },
     lastHealthCheck: healthData,
   });
 });
@@ -172,7 +202,7 @@ function getNextSyncTime(): string {
 /**
  * Scheduled event handler for cron triggers
  */
-async function handleScheduled(event: ScheduledEvent, env: CronEnvironment, ctx: ExecutionContext): Promise<void> {
+async function handleScheduled(event: ScheduledEvent, env: WorkerEnv, ctx: ExecutionContext): Promise<void> {
   console.log(`Cron trigger: ${event.cron} at ${new Date(event.scheduledTime).toISOString()}`);
   
   try {

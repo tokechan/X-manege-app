@@ -5,32 +5,13 @@
 
 import { createRateLimiter } from './rate-limiter';
 
-export interface CronEnvironment {
-  // Secrets
-  X_BEARER_TOKEN: string;
-  X_API_KEY: string;
-  X_API_SECRET: string;
-  DATABASE_URL: string;
-  TURSO_AUTH_TOKEN: string;
-  SENTRY_API_DSN: string;
-  
-  // Configuration
-  MAX_REQUESTS_PER_WINDOW: string;
-  REQUEST_DELAY_MS: string;
-  SYNC_TIMEOUT_MINUTES: string;
-  ENVIRONMENT: string;
-  
-  // Bindings
-  CACHE: KVNamespace;
-  SYNC_STATE: KVNamespace;
-  ANALYTICS: AnalyticsEngineDataset;
-}
+import type { WorkerEnv } from './types/env';
 
 /**
  * Daily X Data Sync Handler
  * Runs at 02:30 UTC daily to sync user posts and metrics
  */
-export async function handleDailyXSync(env: CronEnvironment): Promise<void> {
+export async function handleDailyXSync(env: WorkerEnv): Promise<void> {
   const startTime = Date.now();
   const syncId = `sync-${Date.now()}`;
   
@@ -135,7 +116,7 @@ export async function handleDailyXSync(env: CronEnvironment): Promise<void> {
  * Health Check Handler
  * Runs every 6 hours to verify system health
  */
-export async function handleHealthCheck(env: CronEnvironment): Promise<void> {
+export async function handleHealthCheck(env: WorkerEnv): Promise<void> {
   console.log('Running health check...');
   
   const healthChecks = {
@@ -183,7 +164,7 @@ export async function handleHealthCheck(env: CronEnvironment): Promise<void> {
  * Monthly Cleanup Handler
  * Runs on the 1st of each month to clean up old data
  */
-export async function handleMonthlyCleanup(env: CronEnvironment): Promise<void> {
+export async function handleMonthlyCleanup(env: WorkerEnv): Promise<void> {
   console.log('Running monthly cleanup...');
   
   try {
@@ -207,7 +188,7 @@ export async function handleMonthlyCleanup(env: CronEnvironment): Promise<void> 
 /**
  * Get list of connected X accounts from database
  */
-async function getConnectedXAccounts(env: CronEnvironment): Promise<Array<{id: string, username: string, userId: string}>> {
+async function getConnectedXAccounts(env: WorkerEnv): Promise<Array<{id: string, username: string, userId: string}>> {
   // This would query your database for connected X accounts
   // Placeholder implementation
   return [
@@ -221,7 +202,7 @@ async function getConnectedXAccounts(env: CronEnvironment): Promise<Array<{id: s
 async function syncAccountData(
   account: {id: string, username: string, userId: string},
   rateLimiter: any,
-  env: CronEnvironment
+  env: WorkerEnv
 ): Promise<{tweetsProcessed: number}> {
   // Get user's recent tweets
   const tweets = await rateLimiter.makeRequest(async () => {
