@@ -5,19 +5,23 @@ This document outlines the X API rate limits, our sync strategy, and implementat
 ## 📊 X API v2 Rate Limits (2024)
 
 ### Tweet Lookup Endpoints
+
 - **GET /2/tweets**: 300 requests per 15 minutes (App-only auth)
 - **GET /2/tweets/:id**: 300 requests per 15 minutes (App-only auth)
 - **GET /2/users/:id/tweets**: 1,500 requests per 15 minutes (App-only auth)
 
 ### User Lookup Endpoints
+
 - **GET /2/users/me**: 75 requests per 15 minutes (OAuth 2.0)
 - **GET /2/users/:id**: 300 requests per 15 minutes (App-only auth)
 
 ### Analytics Endpoints (Organic Metrics)
+
 - **GET /2/tweets/:id/metrics**: 300 requests per 15 minutes (OAuth 2.0)
 - **GET /2/users/:id/tweets** (with metrics): 1,500 requests per 15 minutes (OAuth 2.0)
 
 ### Search Endpoints
+
 - **GET /2/tweets/search/recent**: 300 requests per 15 minutes (App-only auth)
 - **GET /2/tweets/search/all**: 300 requests per 15 minutes (Academic Research)
 
@@ -28,7 +32,7 @@ This document outlines the X API rate limits, our sync strategy, and implementat
 1. **Low Traffic Period**: Minimal user activity globally
 2. **X API Stability**: Historically most stable during this window
 3. **Rate Limit Reset**: Many rate limits reset at the top of the hour
-4. **Global Timezone Consideration**: 
+4. **Global Timezone Consideration**:
    - 10:30 PM EST (US East Coast)
    - 7:30 PM PST (US West Coast)
    - 11:30 AM JST (Japan)
@@ -37,11 +41,13 @@ This document outlines the X API rate limits, our sync strategy, and implementat
 ### Rate Limit Strategy
 
 **Conservative Approach** (Recommended for production):
+
 - Max 200 requests per 15-minute window (leaving 100 request buffer)
 - 13.3 requests per minute maximum
 - 1 request every 4.5 seconds
 
 **Aggressive Approach** (For high-volume accounts):
+
 - Max 280 requests per 15-minute window (leaving 20 request buffer)
 - 18.7 requests per minute maximum
 - 1 request every 3.2 seconds
@@ -49,6 +55,7 @@ This document outlines the X API rate limits, our sync strategy, and implementat
 ## 🔄 Sync Implementation Strategy
 
 ### Phase 1: Initial Backfill (30-90 days)
+
 ```typescript
 // Backfill strategy for new users
 const backfillStrategy = {
@@ -61,6 +68,7 @@ const backfillStrategy = {
 ```
 
 ### Phase 2: Daily Incremental Sync
+
 ```typescript
 // Daily sync for existing users
 const dailySyncStrategy = {
@@ -76,6 +84,7 @@ const dailySyncStrategy = {
 ## 🛡️ Rate Limit Guard Rails
 
 ### 1. Request Rate Limiting
+
 ```typescript
 class XAPIRateLimiter {
   private requestQueue: Array<() => Promise<any>> = [];
@@ -94,7 +103,7 @@ class XAPIRateLimiter {
           reject(error);
         }
       });
-      
+
       this.processQueue();
     });
   }
@@ -115,7 +124,7 @@ class XAPIRateLimiter {
       if (request) {
         this.requestCount++;
         await request();
-        
+
         // Wait before processing next request
         setTimeout(() => this.processQueue(), 4500);
       }
@@ -129,6 +138,7 @@ class XAPIRateLimiter {
 ```
 
 ### 2. Response Header Monitoring
+
 ```typescript
 interface XAPIRateLimit {
   limit: number;
@@ -151,6 +161,7 @@ function shouldBackoff(rateLimit: XAPIRateLimit): boolean {
 ```
 
 ### 3. Exponential Backoff for 429 Errors
+
 ```typescript
 async function makeRequestWithBackoff<T>(
   requestFn: () => Promise<T>,
@@ -165,7 +176,7 @@ async function makeRequestWithBackoff<T>(
         // Rate limited - wait and retry
         const backoffTime = Math.min(1000 * Math.pow(2, attempt), 60000); // Max 1 minute
         console.log(`Rate limited. Retrying in ${backoffTime}ms...`);
-        await new Promise(resolve => setTimeout(resolve, backoffTime));
+        await new Promise((resolve) => setTimeout(resolve, backoffTime));
         continue;
       }
       throw error;
@@ -177,6 +188,7 @@ async function makeRequestWithBackoff<T>(
 ## 📈 Monitoring & Alerting
 
 ### Key Metrics to Track
+
 1. **Request Success Rate**: Should be > 99%
 2. **Rate Limit Utilization**: Should stay < 80%
 3. **Sync Completion Time**: Should complete within 30 minutes
@@ -184,6 +196,7 @@ async function makeRequestWithBackoff<T>(
 5. **Data Freshness**: Last successful sync timestamp
 
 ### Alert Thresholds
+
 ```typescript
 const alertThresholds = {
   rateLimitUtilization: 0.85, // Alert if using > 85% of rate limit
@@ -196,24 +209,28 @@ const alertThresholds = {
 ## 🔧 Implementation Checklist
 
 ### Cloudflare Cron Trigger Setup
+
 - [ ] Configure cron trigger for 02:30 UTC daily
 - [ ] Set up proper error handling and retries
 - [ ] Implement rate limiting middleware
 - [ ] Add comprehensive logging
 
 ### Rate Limit Protection
+
 - [ ] Implement request queue with rate limiting
 - [ ] Add response header monitoring
 - [ ] Set up exponential backoff for 429 errors
 - [ ] Create circuit breaker for persistent failures
 
 ### Monitoring & Observability
+
 - [ ] Set up Sentry error tracking
 - [ ] Create custom metrics for rate limit usage
 - [ ] Implement health checks
 - [ ] Set up alerting for sync failures
 
 ### Testing
+
 - [ ] Unit tests for rate limiting logic
 - [ ] Integration tests with X API (using test credentials)
 - [ ] Load testing to verify rate limit handling
@@ -222,6 +239,7 @@ const alertThresholds = {
 ## 🚨 Emergency Procedures
 
 ### Rate Limit Exceeded
+
 1. **Immediate**: Stop all API requests
 2. **Assess**: Check rate limit reset time
 3. **Wait**: Wait for rate limit window to reset
@@ -229,6 +247,7 @@ const alertThresholds = {
 5. **Monitor**: Increase monitoring frequency
 
 ### API Outage
+
 1. **Detect**: Monitor for 5xx errors or timeouts
 2. **Circuit Break**: Stop requests after 3 consecutive failures
 3. **Backoff**: Wait with exponential backoff
@@ -236,6 +255,7 @@ const alertThresholds = {
 5. **Escalate**: Alert if outage persists > 1 hour
 
 ### Data Sync Failure
+
 1. **Log**: Capture full error context
 2. **Retry**: Attempt up to 3 retries with backoff
 3. **Partial Success**: Save any successfully synced data
