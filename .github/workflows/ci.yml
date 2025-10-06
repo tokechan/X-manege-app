@@ -48,12 +48,24 @@ jobs:
 
       - name: Run ESLint
         run: |
-          cd apps/web && npm run lint || echo "Web linting completed with warnings"
-          cd ../api && npm run lint || echo "API linting completed"
+          echo "🔍 Running ESLint checks..."
+          cd apps/web
+          if ! npm run lint; then
+            echo "❌ Web linting failed - this should be fixed before merging"
+            exit 1
+          fi
+          cd ../api
+          npm run lint || echo "⚠️  API linting skipped (no lint script configured)"
 
       - name: Run TypeScript check
         run: |
-          cd apps/web && npm run type-check || echo "Type checking completed with warnings"
+          echo "🔍 Running TypeScript checks..."
+          cd apps/web
+          if ! npm run type-check; then
+            echo "❌ TypeScript errors found - these should be fixed before merging"
+            echo "💡 Run 'npm run type-check' locally to see details"
+            exit 1
+          fi
 
   # Job 2: Testing
   test:

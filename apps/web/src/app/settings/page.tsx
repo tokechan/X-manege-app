@@ -5,21 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { UserMenuCompact } from '@/components/auth/user-menu'
 import { useAuth } from '@/components/providers/auth-provider'
-import { ArrowLeft, Save, X, AlertCircle, CheckCircle } from 'lucide-react'
+import { apiClient, type XAccountSettings } from '@/lib/api'
+import { ArrowLeft, Save, X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
-interface XAccountSettings {
-  username: string
-  apiKey: string
-  apiSecret: string
-  accessToken: string
-  accessTokenSecret: string
-  isConnected: boolean
-}
+type SaveStatus = 'idle' | 'success' | 'error' | 'testing';
 
 export default function SettingsPage() {
-  const { isAuthenticated, isLoading, user } = useAuth()
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth()
   const [settings, setSettings] = useState<XAccountSettings>({
     username: '',
     apiKey: '',
@@ -29,23 +23,44 @@ export default function SettingsPage() {
     isConnected: false
   })
   const [isSaving, setIsSaving] = useState(false)
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [errors, setErrors] = useState<Partial<XAccountSettings>>({})
+  const [isSettingsLoading, setIsSettingsLoading] = useState(true)
 
-  // Load settings from localStorage on component mount
+  // Load settings from API on component mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedSettings = localStorage.getItem('x-account-settings')
-      if (savedSettings) {
-        try {
-          const parsed = JSON.parse(savedSettings)
-          setSettings(parsed)
-        } catch (error) {
-          console.error('Failed to parse saved settings:', error)
+    const loadSettings = async () => {
+      if (!isAuthenticated || authLoading) return;
+      
+      setIsSettingsLoading(true);
+      try {
+        const response = await apiClient.getXSettings();
+        if (response.success && response.data) {
+          setSettings(response.data);
+        } else {
+          console.error('Failed to load settings:', response.error);
+          // Fallback to localStorage for backward compatibility
+          if (typeof window !== 'undefined') {
+            const savedSettings = localStorage.getItem('x-account-settings');
+            if (savedSettings) {
+              try {
+                const parsed = JSON.parse(savedSettings);
+                setSettings(parsed);
+              } catch (error) {
+                console.error('Failed to parse saved settings:', error);
+              }
+            }
+          }
         }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      } finally {
+        setIsSettingsLoading(false);
       }
-    }
-  }, [])
+    };
+
+    loadSettings();
+  }, [isAuthenticated, authLoading])
 
   const validateSettings = (): boolean => {
     const newErrors: Partial<XAccountSettings> = {}
@@ -84,19 +99,48 @@ export default function SettingsPage() {
     setSaveStatus('idle')
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Save to localStorage
-      const updatedSettings = { ...settings, isConnected: true }
-      localStorage.setItem('x-account-settings', JSON.stringify(updatedSettings))
-      setSettings(updatedSettings)
-      
-      setSaveStatus('success')
-      setTimeout(() => setSaveStatus('idle'), 3000)
+      // First test the connection
+      setSaveStatus('testing')
+      const testResponse = await apiClient.testXConnection({
+        username: settings.username,
+        apiKey: settings.apiKey,
+        apiSecret: settings.apiSecret,
+        accessToken: settings.accessToken,
+        accessTokenSecret: settings.accessTokenSecret
+      })
+
+      if (!testResponse.success) {
+        setSaveStatus('error')
+        setErrors({ apiKey: 'Connection test failed. Please check your credentials.' })
+        return
+      }
+
+      // If test passes, save the settings
+      const response = await apiClient.saveXSettings({
+        username: settings.username,
+        apiKey: settings.apiKey,
+        apiSecret: settings.apiSecret,
+        accessToken: settings.accessToken,
+        accessTokenSecret: settings.accessTokenSecret
+      })
+
+      if (response.success && response.data) {
+        const updatedSettings = { ...response.data, isConnected: true }
+        setSettings(updatedSettings)
+        
+        // Also save to localStorage as backup
+        localStorage.setItem('x-account-settings', JSON.stringify(updatedSettings))
+        
+        setSaveStatus('success')
+        setTimeout(() => setSaveStatus('idle'), 3000)
+      } else {
+        setSaveStatus('error')
+        setErrors({ apiKey: response.error || 'Failed to save settings' })
+      }
     } catch (error) {
       console.error('Failed to save settings:', error)
       setSaveStatus('error')
+      setErrors({ apiKey: 'Network error. Please try again.' })
     } finally {
       setIsSaving(false)
     }
@@ -106,22 +150,26 @@ export default function SettingsPage() {
     setIsSaving(true)
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 500))
+      const response = await apiClient.disconnectXAccount()
       
-      const disconnectedSettings = {
-        ...settings,
-        isConnected: false,
-        apiKey: '',
-        apiSecret: '',
-        accessToken: '',
-        accessTokenSecret: ''
+      if (response.success) {
+        const disconnectedSettings = {
+          ...settings,
+          isConnected: false,
+          apiKey: '',
+          apiSecret: '',
+          accessToken: '',
+          accessTokenSecret: ''
+        }
+        
+        setSettings(disconnectedSettings)
+        localStorage.setItem('x-account-settings', JSON.stringify(disconnectedSettings))
+        setErrors({})
+        setSaveStatus('idle')
+      } else {
+        console.error('Failed to disconnect:', response.error)
+        setSaveStatus('error')
       }
-      
-      localStorage.setItem('x-account-settings', JSON.stringify(disconnectedSettings))
-      setSettings(disconnectedSettings)
-      setErrors({})
-      setSaveStatus('idle')
     } catch (error) {
       console.error('Failed to disconnect:', error)
       setSaveStatus('error')
@@ -138,7 +186,7 @@ export default function SettingsPage() {
     }
   }
 
-  if (isLoading) {
+  if (authLoading || isSettingsLoading) {
     return (
       <div className="container mx-auto px-4 py-8" data-testid="loading-skeleton">
         <div className="animate-pulse">
@@ -327,8 +375,17 @@ export default function SettingsPage() {
             >
               {isSaving ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                  Saving...
+                  {saveStatus === 'testing' ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Testing Connection...
+                    </>
+                  ) : (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  )}
                 </>
               ) : (
                 <>
@@ -358,10 +415,19 @@ export default function SettingsPage() {
             </div>
           )}
 
+          {saveStatus === 'testing' && (
+            <div className="flex items-center space-x-2 text-blue-500 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-sm">Testing X API connection...</span>
+            </div>
+          )}
+
           {saveStatus === 'error' && (
             <div className="flex items-center space-x-2 text-destructive bg-destructive/10 p-3 rounded-md">
               <AlertCircle className="h-4 w-4" />
-              <span className="text-sm">Failed to save settings. Please check your input and try again.</span>
+              <span className="text-sm">
+                {errors.apiKey || 'Failed to save settings. Please check your input and try again.'}
+              </span>
             </div>
           )}
         </CardContent>
